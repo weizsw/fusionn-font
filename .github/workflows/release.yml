@@ -47,11 +47,21 @@ jobs:
         run: |
           pyinstaller --onefile --name fusionn-font fusionn_font/__main__.py
 
+      - name: Rename binary (Unix)
+        if: runner.os != 'Windows'
+        run: |
+          mv dist/${{ matrix.artifact_name }} dist/${{ matrix.asset_name }}
+
+      - name: Rename binary (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          move dist\${{ matrix.artifact_name }} dist\${{ matrix.asset_name }}
+
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset_name }}
-          path: dist/${{ matrix.artifact_name }}
+          path: dist/${{ matrix.asset_name }}
 
   release:
     needs: build
@@ -62,6 +72,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           path: artifacts
+          merge-multiple: true
 
       - name: Display structure of downloaded files
         run: ls -R artifacts
@@ -69,10 +80,5 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
-          files: |
-            artifacts/fusionn-font-linux-amd64/fusionn-font
-            artifacts/fusionn-font-darwin-arm64/fusionn-font
-            artifacts/fusionn-font-darwin-amd64/fusionn-font
-            artifacts/fusionn-font-windows-amd64.exe/fusionn-font.exe
+          files: artifacts/*
           generate_release_notes: true
-
