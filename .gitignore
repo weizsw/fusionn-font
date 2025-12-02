@@ -35,6 +35,7 @@ ENV/
 *.swp
 *.swo
 .cursor/
+!.github/
 
 # PyInstaller
 *.manifest
