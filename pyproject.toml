@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "fusionn-font"
+version = "0.1.0"
+description = "CLI tool to subset fonts based on ASS subtitle file usage"
+readme = "README.md"
+requires-python = ">=3.9"
+license = "MIT"
+authors = [
+    { name = "Maverick" }
+]
+dependencies = [
+    "fonttools>=4.47.0",
+    "click>=8.1.0",
+]
+
+[project.scripts]
+fusionn-font = "fusionn_font.cli:main"
+
+[project.optional-dependencies]
+dev = [
+    "pyinstaller>=6.0.0",
+]
+
