@@ -1,70 +1,130 @@
 # fusionn-font
 
-CLI tool to subset fonts based on ASS subtitle file usage.
+CLI tool to subset fonts based on ASS subtitle file usage. Automatically matches fonts by family name and optionally embeds them directly into the ASS file.
+
+## Features
+
+- 🔍 **Analyze** ASS files to see which fonts are needed
+- ✂️ **Subset** fonts to include only characters actually used (often 90%+ size reduction)
+- 📦 **Embed** subsetted fonts directly into ASS files
+- 🔄 **Auto-match** fonts by family name from a directory
 
 ## Installation
 
+### Via pip
+
 ```bash
-uv venv
-source .venv/bin/activate
-uv pip install -e .
+pip install fusionn-font
 ```
 
-Or with pip:
+### Via binary
+
+Download pre-built binaries from [Releases](https://github.com/user/fusionn-font/releases):
+
+- `fusionn-font-linux-amd64` - Linux
+- `fusionn-font-darwin-arm64` - macOS (Apple Silicon)
+- `fusionn-font-darwin-amd64` - macOS (Intel)
+- `fusionn-font-windows-amd64.exe` - Windows
+
+### From source
+
 ```bash
-pip install -e .
+git clone https://github.com/user/fusionn-font.git
+cd fusionn-font
+uv venv && source .venv/bin/activate
+uv pip install -e .
 ```
 
 ## Usage
 
-### Analyze ASS file
+### 1. Analyze ASS file
 
-See what fonts are used and how many characters each needs:
+See what fonts are needed and how many characters each uses:
 
 ```bash
 fusionn-font analyze subtitle.ass
 ```
 
-### Subset fonts
+Output:
+```
+📄 Analyzing: subtitle.ass
 
-Point to a folder containing your fonts - the tool will automatically match
-fonts by family name:
+🔤 Font: WenQuanYi Micro Hei
+   Characters used: 1153
+   Sample: 一丁三上下不世丢个中...
+```
+
+### 2. Subset fonts
+
+Point to a directory containing your fonts. The tool automatically matches fonts by family name:
 
 ```bash
 fusionn-font subset subtitle.ass -d ./fonts/
 ```
 
-### Embed fonts into ASS file
+Output:
+```
+🔍 Scanning fonts in: fonts
+   Found 1 font file(s), 2 name mapping(s):
+   • "WenQuanYi Micro Hei" → WenQuanYi Micro Hei.ttf
+   • "文泉驛微米黑" → WenQuanYi Micro Hei.ttf
 
-Subset fonts and embed them directly into the ASS file:
+🔤 WenQuanYi Micro Hei
+   Source: fonts/WenQuanYi Micro Hei.ttf
+   Original glyphs: 49531
+   Characters needed: 1153
+   Subsetted glyphs: 2273
+   Size: 4,625,768 → 261,868 bytes (94.3% smaller)
+```
+
+### 3. Embed fonts into ASS
+
+Subset fonts and embed them directly into the ASS file's `[Fonts]` section:
 
 ```bash
 fusionn-font subset subtitle.ass -d ./fonts/ --embed
 ```
 
-This creates `subtitle.embedded.ass` with fonts embedded in the `[Fonts]` section.
+Creates `subtitle.embedded.ass` with fonts embedded - no external font files needed!
 
 ### Options
 
-- `-d, --fonts-dir` - Directory containing font files (required)
-- `-o, --output-dir` - Output directory for subsetted fonts
-- `--embed` - Embed subsetted fonts into the ASS file
-- `--output-ass` - Custom output path for embedded ASS file
-- `--dry-run` - Show what would be done without creating files
+```
+fusionn-font subset [OPTIONS] ASS_FILE
+
+Options:
+  -d, --fonts-dir DIRECTORY  Directory containing font files (required)
+  -o, --output-dir PATH      Output directory for subsetted fonts
+  --embed                    Embed fonts directly into ASS file
+  --output-ass PATH          Custom output path for embedded ASS
+  --dry-run                  Preview without creating files
+  --help                     Show help
+```
 
 ### Font info
 
-Show information about a font file:
+Inspect a font file:
 
 ```bash
-fusionn-font info ./NotoSansCJK-Regular.ttf
+fusionn-font info ./font.ttf
 ```
+
+## How it works
+
+1. Parses ASS file to extract font names from `[V4+ Styles]` and `{\fn}` override tags
+2. Scans your fonts directory and reads font family names from each file
+3. Matches fonts automatically by family name, full name, or filename
+4. Uses `fonttools` to subset fonts, keeping only glyphs for characters used
+5. Optionally embeds fonts using ASS's UUEncode format in `[Fonts]` section
 
 ## Building standalone binary
 
 ```bash
-uv pip install pyinstaller
+pip install pyinstaller
 pyinstaller --onefile --name fusionn-font fusionn_font/__main__.py
+# Binary: dist/fusionn-font
 ```
 
-The binary will be in `dist/fusionn-font`.
+## License
+
+MIT
