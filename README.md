@@ -124,7 +124,3 @@ pip install pyinstaller
 pyinstaller --onefile --name fusionn-font fusionn_font/__main__.py
 # Binary: dist/fusionn-font
 ```
-
-## License
-
-MIT
