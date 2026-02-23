@@ -19,12 +19,6 @@ jobs:
           - os: ubuntu-24.04-arm
             artifact_name: fusionn-font
             asset_name: fusionn-font-linux-arm64
-          - os: macos-latest
-            artifact_name: fusionn-font
-            asset_name: fusionn-font-darwin-arm64
-          - os: macos-14-large
-            artifact_name: fusionn-font
-            asset_name: fusionn-font-darwin-amd64
           - os: windows-latest
             artifact_name: fusionn-font.exe
             asset_name: fusionn-font-windows-amd64.exe
