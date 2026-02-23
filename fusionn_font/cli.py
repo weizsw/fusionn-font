@@ -31,7 +31,7 @@ QUICK START:
 
 
 @click.group(help=HELP_TEXT)
-@click.version_option()
+@click.version_option(version="0.1.0", package_name="fusionn-font")
 def main():
     pass
 
